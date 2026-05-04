@@ -21,7 +21,6 @@ const AVAILABLE_COMMANDS = [
   "certs",
   "links",
   "curriculo",
-  "cv",
   "clear",
 ];
 
@@ -179,6 +178,19 @@ export default function Terminal() {
       </a>
     );
 
+    // Renderizar um link real de download para o currículo físico da pasta public.
+    const renderCvDownloadLink = () => (
+      <a
+        href="/Curriculo_Lucas_ATS.pdf"
+        download="Curriculo_Lucas_ATS.pdf"
+        target="_blank"
+        rel="noreferrer"
+        className="text-blue-400 hover:underline"
+      >
+        [ Download CV ]
+      </a>
+    );
+
     // Direcionar a resposta conforme o comando informado pelo usuário.
     switch (normalized) {
       case "help":
@@ -222,15 +234,12 @@ export default function Terminal() {
         });
         break;
       case "curriculo":
-      case "cv":
         nextLines.push({
           kind: "output",
           text: (
             <>
               📄 Baixe meu currículo clicando aqui:{" "}
-              <a href="/cv-lucas.pdf" download className={`${currentTheme.linkColor} hover:underline`}>
-                [ Download CV ]
-              </a>
+              {renderCvDownloadLink()}
             </>
           ),
         });
