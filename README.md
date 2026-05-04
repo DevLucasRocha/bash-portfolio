@@ -1,4 +1,4 @@
-# Terminal Portfolio - Lucas Rocha
+# Bash Portfolio
 
 Portfólio interativo em formato de terminal, projetado para comunicar competências técnicas de forma prática e memorável.
 
