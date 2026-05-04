@@ -6,8 +6,8 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Bash Portfolio - Lucas Rocha" },
-      { name: "description", content: "Portfólio em estilo terminal: Cloud, Automação, Go e React." },
+      { title: "Bash Portfolio" },
+      { name: "description", content: "Portfólio em estilo terminal: Cloud, Desenvolvimento, Operações, Go e React." },
     ],
   }),
 });
