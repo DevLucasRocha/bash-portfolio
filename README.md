@@ -22,7 +22,34 @@ O objetivo é demonstrar, na prática, domínio em **Engenharia de Software**, *
 - 📜 **Histórico de comandos** com foco em navegação orientada por CLI.
 - ⌨️ **Navegação por setas (↑/↓)** para recuperar comandos anteriores.
 - ✨ **Autocomplete com Tab** para acelerar interação e descoberta de comandos.
-- 🧠 **Comandos semânticos de currículo** (`whoami`, `experiencia`, `skills`, `certs`, etc.).
+- 🧠 **Comandos semânticos de currículo** (`perfil`, `experiencia`, `skills`, `certs`, `links`, `curriculo`, etc.).
+
+---
+
+## Estrutura do código
+
+```text
+src/
+├── components/
+│   └── terminal/
+│       └── Terminal.tsx      # Shell da UI + estado e interação do prompt
+├── routes/
+│   ├── __root.tsx           # Shell HTML, CSS global e página 404
+│   └── index.tsx            # Rota `/` carregando o terminal
+├── terminal/
+│   ├── constants.ts         # Textos, URLs e comandos expostos no help
+│   ├── run-terminal-command.tsx # Regras de negócio da CLI (por comando)
+│   ├── theme.ts             # Tokens visuais por tema (Ubuntu / macOS / PS)
+│   └── types.ts             # Tipos compartilhados do histórico
+├── router.tsx
+├── routeTree.gen.ts          # Gerado pelo TanStack Router (não editar)
+└── styles.css                # Entrada Tailwind v4 (`@tailwindcss/vite`)
+
+public/
+└── Curriculo_Lucas_ATS.pdf   # Arquivo estático servido como `/Curriculo_Lucas_ATS.pdf`
+```
+
+> **Observação:** as dependências foram enxugadas no `package.json`. Após atualizar o repositório, rode `npm install` para atualizar também o `package-lock.json` na sua máquina.
 
 ---
 

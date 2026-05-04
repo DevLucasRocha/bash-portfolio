@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Terminal from "@/components/Terminal";
+import Terminal from "@/components/terminal/Terminal";
 
 // Declarar a rota principal e configurar metadados para SEO e compartilhamento.
 export const Route = createFileRoute("/")({

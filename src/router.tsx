@@ -1,18 +1,18 @@
 import { createRouter, useRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-// Renderizar uma tela padrão de falha para capturar erros inesperados de navegação.
+// Renderizar tela simples quando o router encontrar erro inesperado.
 function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  // Acessar o router para invalidar cache e permitir nova tentativa de carregamento.
+  // Acessar o router para invalidar cache antes de repetir navegação.
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 text-zinc-100">
       <div className="max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-950/80">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-destructive"
+            className="h-8 w-8 text-red-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -25,30 +25,29 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          An unexpected error occurred. Please try again.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-100">Algo deu errado</h1>
+        <p className="mt-2 text-sm text-zinc-400">Ocorreu um erro inesperado. Tente novamente.</p>
         {import.meta.env.DEV && error.message && (
-          <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive">
+          <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-zinc-900 p-3 text-left font-mono text-xs text-red-300">
             {error.message}
           </pre>
         )}
         <div className="mt-6 flex items-center justify-center gap-3">
           <button
+            type="button"
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
           >
-            Try again
+            Tentar de novo
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-md border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-100 transition-colors hover:bg-zinc-800"
           >
-            Go home
+            Início
           </a>
         </div>
       </div>
@@ -56,7 +55,7 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
   );
 }
 
-// Criar e retornar uma instância única do roteador com estratégia de preload e erro padrão.
+// Encapsular a criação do router TanStack para o bootstrap da aplicação.
 export const getRouter = () => {
   const router = createRouter({
     routeTree,
