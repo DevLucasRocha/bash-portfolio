@@ -42,6 +42,15 @@ export default function Terminal() {
     } else if (cmd === "./limpar-tela") {
       setHistory([]);
       return;
+    } else if (cmd === "./baixar-cv.sh") {
+      newLines.push({ type: "comment", text: "# Preparando download do CV..." });
+      newLines.push({ type: "output", text: "  ✔ cv-lucas.pdf pronto. Iniciando download..." });
+      const a = document.createElement("a");
+      a.href = "/cv-lucas.pdf";
+      a.download = "cv-lucas.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
 
     setHistory((h) => [...h, ...newLines]);
@@ -122,7 +131,7 @@ export default function Terminal() {
             <div className="mt-6 space-y-2">
               <p className="text-gray-500"># Comandos disponíveis:</p>
               <div className="flex flex-wrap gap-3">
-                {["./ver-stack.sh", "./ver-projetos.sh", "./limpar-tela"].map((cmd) => (
+                {["./ver-stack.sh", "./ver-projetos.sh", "./baixar-cv.sh", "./limpar-tela"].map((cmd) => (
                   <button
                     key={cmd}
                     onClick={() => runCommand(cmd)}
