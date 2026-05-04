@@ -1,12 +1,15 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 
+// Definir o formato de cada linha exibida no histórico do terminal.
 type HistoryLine = {
   kind: "command" | "output" | "error";
   text: string;
 };
 
+// Definir os temas visuais disponíveis para simular terminais reais.
 type ThemeKey = "ubuntu" | "macos" | "powershell";
 
+// Declarar os comandos aceitos para orientar o help e a validação da CLI.
 const AVAILABLE_COMMANDS = [
   "help",
   "whoami",
@@ -19,23 +22,29 @@ const AVAILABLE_COMMANDS = [
   "clear",
 ];
 
+// Centralizar o texto de apresentação profissional para reutilizar no comando whoami/sobre.
 const ABOUT_TEXT =
   "Lucas Henrique Souza de Santana da Rocha Santos - Engenheiro de Software | Full Stack | DevOps | Cloud (AWS, Azure, OCI). Especializado em automatizar infraestruturas complexas (Ansible, Terraform, Python) e desenvolver sistemas escaláveis (Golang, React).";
 
+// Estruturar os itens de experiência para renderizar respostas em múltiplas linhas.
 const EXPERIENCE_LINES = [
   "Projetos de Portfólio (Fevereiro/2026 - Presente): Criação do 'Fila Livre' (Go, React, MySQL via Aiven, Heurística Preditiva).",
   "Prefeitura de São Luís (Jun/2025 - Presente): Automação com Ansible/Terraform, SIEM Wazuh, scripts em Python/Bash pro GLPI e Proxmox VE.",
   "Subway Brasil: Suporte e automação de relatórios em Python.",
 ];
 
+// Consolidar as competências técnicas em um único retorno de comando.
 const SKILLS_TEXT =
   "Python, Golang, React.js, Bash, PowerShell, AWS, Azure, OCI, Docker, Ansible, Terraform, Proxmox, Wazuh, Zabbix.";
 
+// Consolidar as certificações para exibir no comando certs.
 const CERTS_TEXT =
   "AWS Certified Cloud Practitioner, AZ-900, Oracle OCI Multicloud/AI/GenAI.";
 
+// Definir a ordem de rotação do botão de alternância de tema.
 const THEME_ORDER: ThemeKey[] = ["ubuntu", "macos", "powershell"];
 
+// Mapear as propriedades visuais e comportamentais específicas de cada tema.
 const THEME_CONFIG: Record<
   ThemeKey,
   {
@@ -94,15 +103,22 @@ const THEME_CONFIG: Record<
 };
 
 export default function Terminal() {
+  // Inicializar o estado do tema com Ubuntu como padrão da aplicação.
   const [theme, setTheme] = useState<ThemeKey>("ubuntu");
+  // Inicializar o histórico com uma mensagem de orientação para o primeiro acesso.
   const [history, setHistory] = useState<HistoryLine[]>([
     { kind: "output", text: "Terminal Portfolio carregado. Digite 'help' para ver os comandos." },
   ]);
+  // Controlar o valor digitado no prompt atual.
   const [command, setCommand] = useState("");
+  // Referenciar a área rolável para manter o foco na última saída.
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Referenciar o input para manter interação contínua sem cliques extras.
   const inputRef = useRef<HTMLInputElement>(null);
+  // Resolver o objeto de tema ativo para simplificar o uso no JSX.
   const currentTheme = THEME_CONFIG[theme];
 
+  // Sincronizar a rolagem automática sempre que o histórico receber novas linhas.
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -110,10 +126,12 @@ export default function Terminal() {
     });
   }, [history]);
 
+  // Garantir o foco inicial no input ao montar o componente.
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
+  // Alternar ciclicamente entre Ubuntu, macOS e PowerShell no cabeçalho.
   const cycleTheme = () => {
     setTheme((previous) => {
       const nextIndex = (THEME_ORDER.indexOf(previous) + 1) % THEME_ORDER.length;
@@ -122,21 +140,27 @@ export default function Terminal() {
     inputRef.current?.focus();
   };
 
+  // Interpretar o comando digitado e transformar em saídas de histórico.
   const runCommand = (rawCommand: string) => {
+    // Normalizar a entrada para simplificar comparação de aliases e comandos.
     const normalized = rawCommand.trim().toLowerCase();
 
+    // Registrar uma linha de prompt vazia quando o usuário apenas pressionar Enter.
     if (!normalized) {
       setHistory((prev) => [...prev, { kind: "command", text: `${currentTheme.prompt} ` }]);
       return;
     }
 
+    // Limpar o histórico completamente quando receber o comando clear.
     if (normalized === "clear") {
       setHistory([]);
       return;
     }
 
+    // Registrar o comando executado antes de anexar a resposta correspondente.
     const nextLines: HistoryLine[] = [{ kind: "command", text: `${currentTheme.prompt} ${normalized}` }];
 
+    // Direcionar a resposta conforme o comando informado pelo usuário.
     switch (normalized) {
       case "help":
         nextLines.push({
@@ -170,6 +194,7 @@ export default function Terminal() {
     setHistory((prev) => [...prev, ...nextLines]);
   };
 
+  // Interceptar o submit do formulário para executar comandos sem recarregar a página.
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     runCommand(command);
@@ -177,14 +202,17 @@ export default function Terminal() {
   };
 
   return (
+    // Renderizar a área externa do terminal com transição de cores por tema.
     <div
       className={`min-h-screen ${currentTheme.pageBackground} font-mono p-3 sm:p-6 transition-colors duration-200`}
     >
       <div
+        // Renderizar o contêiner principal e recuperar foco ao clicar em qualquer área.
         className={`mx-auto w-full max-w-5xl h-[92vh] border ${currentTheme.containerBorder} rounded-md ${currentTheme.shellBackground} flex flex-col overflow-hidden transition-colors duration-200`}
         onClick={() => inputRef.current?.focus()}
       >
         <div
+          // Renderizar o cabeçalho dinâmico com controles e botão de troca de tema.
           className={`px-4 py-2 border-b ${currentTheme.headerBorder} ${currentTheme.headerBackground} text-zinc-200 text-xs sm:text-sm flex items-center justify-between gap-2`}
         >
           <div className="flex items-center gap-2 min-w-[92px]">
@@ -221,6 +249,7 @@ export default function Terminal() {
           ref={scrollRef}
           className="terminal-scroll flex-1 overflow-y-auto px-4 py-3 text-xs sm:text-sm"
         >
+          {/* Renderizar cada linha do histórico com cor e espaçamento apropriados por tipo. */}
           {history.map((line, index) => (
             <p
               key={`${line.kind}-${index}`}
@@ -237,6 +266,7 @@ export default function Terminal() {
           ))}
 
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            {/* Exibir o prompt ativo, capturar o texto e manter cursor piscante no final. */}
             <span className={`${currentTheme.promptColor} shrink-0`}>{currentTheme.prompt}</span>
             <input
               ref={inputRef}
@@ -253,6 +283,7 @@ export default function Terminal() {
       </div>
 
       <style>{`
+        /* Estilizar a barra de rolagem para preservar a imersão visual do terminal. */
         .terminal-scroll {
           scrollbar-width: thin;
           scrollbar-color: rgba(90, 90, 90, 0.45) transparent;

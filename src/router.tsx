@@ -1,7 +1,9 @@
 import { createRouter, useRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
+// Renderizar uma tela padrão de falha para capturar erros inesperados de navegação.
 function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  // Acessar o router para invalidar cache e permitir nova tentativa de carregamento.
   const router = useRouter();
 
   return (
@@ -54,6 +56,7 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
   );
 }
 
+// Criar e retornar uma instância única do roteador com estratégia de preload e erro padrão.
 export const getRouter = () => {
   const router = createRouter({
     routeTree,
