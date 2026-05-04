@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import Typewriter from "typewriter-effect";
 
 type Line = {
-  type: "command" | "output" | "prompt" | "comment";
+  type: "command" | "output" | "prompt" | "comment" | "error" | "success" | "progress";
   text: string;
+  id?: string;
 };
 
 const STACK = [
@@ -26,6 +27,86 @@ export default function Terminal() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [history, bootDone]);
 
+  const appendLines = (lines: Line[]) =>
+    setHistory((h) => [...h, ...lines]);
+
+  const updateLine = (id: string, patch: Partial<Line>) =>
+    setHistory((h) => h.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+
+  const renderProgressBar = (pct: number) => {
+    const width = 24;
+    const filled = Math.round((pct / 100) * width);
+    return `[${"█".repeat(filled)}${"░".repeat(width - filled)}] ${pct
+      .toString()
+      .padStart(3)}%`;
+  };
+
+  const downloadCV = async () => {
+    const progressId = `dl-${Date.now()}`;
+    appendLines([
+      { type: "comment", text: "# Conectando ao servidor..." },
+      { type: "output", text: "  → GET /cv-lucas.pdf" },
+      { type: "progress", id: progressId, text: renderProgressBar(0) + " baixando..." },
+    ]);
+
+    try {
+      const res = await fetch("/cv-lucas.pdf");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const total = Number(res.headers.get("content-length")) || 0;
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("stream indisponível");
+
+      const chunks: Uint8Array[] = [];
+      let received = 0;
+      let lastPct = -1;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        const pct = total
+          ? Math.min(100, Math.round((received / total) * 100))
+          : Math.min(99, lastPct + 5);
+        if (pct !== lastPct) {
+          lastPct = pct;
+          updateLine(progressId, {
+            text: renderProgressBar(pct) + ` ${(received / 1024).toFixed(1)} KB`,
+          });
+          // yield to React so the bar repaints
+          await new Promise((r) => setTimeout(r, 30));
+        }
+      }
+
+      updateLine(progressId, { text: renderProgressBar(100) + " concluído" });
+
+      const blob = new Blob(chunks as BlobPart[], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cv-lucas.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      appendLines([
+        {
+          type: "success",
+          text: `  ✔ Download concluído: cv-lucas.pdf (${(received / 1024).toFixed(1)} KB)`,
+        },
+      ]);
+    } catch (err) {
+      updateLine(progressId, { text: renderProgressBar(0) + " falhou" });
+      const msg = err instanceof Error ? err.message : "erro desconhecido";
+      appendLines([
+        { type: "error", text: `  ✘ Erro ao baixar CV: ${msg}` },
+        { type: "comment", text: "# Verifique sua conexão e tente novamente." },
+      ]);
+    }
+  };
+
   const runCommand = (cmd: string) => {
     const newLines: Line[] = [
       { type: "command", text: `lucas@portfolio:~$ ${cmd}` },
@@ -43,14 +124,9 @@ export default function Terminal() {
       setHistory([]);
       return;
     } else if (cmd === "./baixar-cv.sh") {
-      newLines.push({ type: "comment", text: "# Preparando download do CV..." });
-      newLines.push({ type: "output", text: "  ✔ cv-lucas.pdf pronto. Iniciando download..." });
-      const a = document.createElement("a");
-      a.href = "/cv-lucas.pdf";
-      a.download = "cv-lucas.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      setHistory((h) => [...h, ...newLines]);
+      void downloadCV();
+      return;
     }
 
     setHistory((h) => [...h, ...newLines]);
@@ -123,6 +199,12 @@ export default function Terminal() {
               );
             if (line.type === "comment")
               return <p key={i} className="text-gray-500">{line.text}</p>;
+            if (line.type === "error")
+              return <p key={i} className="text-red-400">{line.text}</p>;
+            if (line.type === "success")
+              return <p key={i} className="text-green-300">{line.text}</p>;
+            if (line.type === "progress")
+              return <p key={i} className="text-blue-300 whitespace-pre">{line.text}</p>;
             return <p key={i} className="text-green-400">{line.text}</p>;
           })}
 
