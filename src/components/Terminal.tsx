@@ -175,9 +175,9 @@ export default function Terminal() {
                   .typeString('<span class="text-green-300">OK</span>')
                   .pauseFor(300)
                   .typeString("<br/>&gt; ")
-                  .typeString('<span class="text-white">Engenheiro de Software & Analista de Infraestrutura.</span>')
+                  .typeString('<span class="text-white">Engenheiro de Software | </span><span class="text-blue-300">Full Stack</span><span class="text-white"> | </span><span class="text-blue-300">DevOps</span>')
                   .typeString("<br/>&gt; ")
-                  .typeString('<span class="text-white">Foco em </span><span class="text-blue-300">Cloud, Automação e Go/React</span><span class="text-white">.</span>')
+                  .typeString('<span class="text-white">Foco em </span><span class="text-blue-300">Cloud, Desenvolvimento e Operações</span><span class="text-white">.</span>')
                   .pauseFor(400)
                   .callFunction(() => setBootDone(true))
                   .start();
@@ -192,14 +192,14 @@ export default function Terminal() {
                 <span className="text-green-300">OK</span>
               </p>
               <p>
-                &gt;{" "}
-                <span className="text-white">
-                  Engenheiro de Software & Analista de Infraestrutura.
-                </span>
+                &gt; <span className="text-white">Engenheiro de Software | </span>
+                <span className="text-blue-300">Full Stack</span>
+                <span className="text-white"> | </span>
+                <span className="text-blue-300">DevOps</span>
               </p>
               <p>
                 &gt; <span className="text-white">Foco em </span>
-                <span className="text-blue-300">Cloud, Automação e Go/React</span>
+                <span className="text-blue-300">Cloud, Desenvolvimento e Operações</span>
                 <span className="text-white">.</span>
               </p>
             </>
