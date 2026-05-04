@@ -134,6 +134,16 @@ export default function Terminal() {
       setHistory((h) => [...h, ...newLines]);
       void downloadCV();
       return;
+    } else if (cmd === "./contatar.sh") {
+      newLines.push({ type: "comment", text: "# Abrindo canais de contato..." });
+      CONTACTS.forEach((c) =>
+        newLines.push({
+          type: "link",
+          text: `  ➜ ${c.label}  ${c.value}`,
+          href: c.href,
+        }),
+      );
+      newLines.push({ type: "success", text: "  ✔ 3 contatos disponíveis. Clique para abrir." });
     }
 
     setHistory((h) => [...h, ...newLines]);
@@ -212,6 +222,19 @@ export default function Terminal() {
               return <p key={i} className="text-green-300">{line.text}</p>;
             if (line.type === "progress")
               return <p key={i} className="text-blue-300 whitespace-pre">{line.text}</p>;
+            if (line.type === "link")
+              return (
+                <p key={i} className="whitespace-pre">
+                  <a
+                    href={line.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-300 hover:text-green-300 underline underline-offset-2"
+                  >
+                    {line.text}
+                  </a>
+                </p>
+              );
             return <p key={i} className="text-green-400">{line.text}</p>;
           })}
 
@@ -220,7 +243,7 @@ export default function Terminal() {
             <div className="mt-6 space-y-2">
               <p className="text-gray-500"># Comandos disponíveis:</p>
               <div className="flex flex-wrap gap-3">
-                {["./ver-stack.sh", "./ver-projetos.sh", "./baixar-cv.sh", "./limpar-tela"].map((cmd) => (
+                {["./ver-stack.sh", "./ver-projetos.sh", "./baixar-cv.sh", "./contatar.sh", "./limpar-tela"].map((cmd) => (
                   <button
                     key={cmd}
                     onClick={() => runCommand(cmd)}
