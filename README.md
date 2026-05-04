@@ -102,3 +102,8 @@ npm run preview
 
 - O projeto prioriza legibilidade, manutenção e expansão incremental das interações de terminal.
 - A arquitetura atual facilita adicionar novos comandos, temas e fluxos de UX sem acoplamento excessivo.
+
+## 🌐 Contato
+
+📧 [lucas_santos239@outlook.com](mailto:lucas_santos239@outlook.com)  
+🔗 [LinkedIn](https://www.linkedin.com/in/lucas-hssrs/)
