@@ -1,9 +1,9 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 // Definir o formato de cada linha exibida no histórico do terminal.
 type HistoryLine = {
   kind: "command" | "output" | "error";
-  text: string;
+  text: ReactNode;
 };
 
 // Definir os temas visuais disponíveis para simular terminais reais.
@@ -12,13 +12,16 @@ type ThemeKey = "ubuntu" | "macos" | "powershell";
 // Declarar os comandos aceitos para orientar o help e a validação da CLI.
 const AVAILABLE_COMMANDS = [
   "help",
-  "whoami",
+  "perfil",
   "sobre",
   "experiencia",
   "exp",
   "skills",
   "stack",
   "certs",
+  "links",
+  "curriculo",
+  "cv",
   "clear",
 ];
 
@@ -56,6 +59,7 @@ const THEME_CONFIG: Record<
     headerBorder: string;
     promptColor: string;
     cursorColor: string;
+    linkColor: string;
     title: string;
     switcherLabel: string;
     switcherPosition: "left" | "right";
@@ -70,6 +74,7 @@ const THEME_CONFIG: Record<
     headerBorder: "border-zinc-700",
     promptColor: "text-green-500",
     cursorColor: "bg-green-500",
+    linkColor: "text-blue-300",
     title: "Terminal",
     switcherLabel: "Tema: Ubuntu",
     switcherPosition: "right",
@@ -83,6 +88,7 @@ const THEME_CONFIG: Record<
     headerBorder: "border-zinc-500",
     promptColor: "text-zinc-100",
     cursorColor: "bg-zinc-100",
+    linkColor: "text-blue-300",
     title: "Terminal",
     switcherLabel: "Tema: macOS",
     switcherPosition: "right",
@@ -96,6 +102,7 @@ const THEME_CONFIG: Record<
     headerBorder: "border-blue-700",
     promptColor: "text-amber-300",
     cursorColor: "bg-amber-300",
+    linkColor: "text-cyan-300",
     title: "Windows PowerShell",
     switcherLabel: "Tema: PowerShell",
     switcherPosition: "left",
@@ -160,6 +167,18 @@ export default function Terminal() {
     // Registrar o comando executado antes de anexar a resposta correspondente.
     const nextLines: HistoryLine[] = [{ kind: "command", text: `${currentTheme.prompt} ${normalized}` }];
 
+    // Renderizar um link externo com comportamento consistente entre os temas.
+    const renderExternalLink = (label: string, href: string) => (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={`${currentTheme.linkColor} hover:underline`}
+      >
+        {label}
+      </a>
+    );
+
     // Direcionar a resposta conforme o comando informado pelo usuário.
     switch (normalized) {
       case "help":
@@ -168,7 +187,7 @@ export default function Terminal() {
           text: `Comandos: ${AVAILABLE_COMMANDS.join(", ")}`,
         });
         break;
-      case "whoami":
+      case "perfil":
       case "sobre":
         nextLines.push({ kind: "output", text: ABOUT_TEXT });
         break;
@@ -182,6 +201,39 @@ export default function Terminal() {
         break;
       case "certs":
         nextLines.push({ kind: "output", text: CERTS_TEXT });
+        break;
+      case "links":
+        nextLines.push({
+          kind: "output",
+          text: (
+            <>
+              LinkedIn:{" "}
+              {renderExternalLink("https://www.linkedin.com/in/lucas-hssrs", "https://www.linkedin.com/in/lucas-hssrs")}
+            </>
+          ),
+        });
+        nextLines.push({
+          kind: "output",
+          text: (
+            <>
+              GitHub: {renderExternalLink("https://github.com/DevLucasRocha", "https://github.com/DevLucasRocha")}
+            </>
+          ),
+        });
+        break;
+      case "curriculo":
+      case "cv":
+        nextLines.push({
+          kind: "output",
+          text: (
+            <>
+              📄 Baixe meu currículo clicando aqui:{" "}
+              <a href="/cv-lucas.pdf" download className={`${currentTheme.linkColor} hover:underline`}>
+                [ Download CV ]
+              </a>
+            </>
+          ),
+        });
         break;
       default:
         nextLines.push({
