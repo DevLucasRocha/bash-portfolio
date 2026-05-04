@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import Typewriter from "typewriter-effect";
 
 type Line = {
-  type: "command" | "output" | "prompt" | "comment" | "error" | "success" | "progress";
+  type: "command" | "output" | "prompt" | "comment" | "error" | "success" | "progress" | "link";
   text: string;
   id?: string;
+  href?: string;
 };
 
 const STACK = [
@@ -17,6 +18,12 @@ const PROJECT = {
   desc: "Monitoramento de filas em tempo real com Heurística Preditiva.",
   stack: "Go, React, MySQL, Multi-cloud",
 };
+
+const CONTACTS = [
+  { label: "Email   ", value: "lucas@exemplo.com", href: "mailto:lucas@exemplo.com" },
+  { label: "LinkedIn", value: "linkedin.com/in/lucas", href: "https://linkedin.com/in/lucas" },
+  { label: "GitHub  ", value: "github.com/lucas", href: "https://github.com/lucas" },
+];
 
 export default function Terminal() {
   const [bootDone, setBootDone] = useState(false);
