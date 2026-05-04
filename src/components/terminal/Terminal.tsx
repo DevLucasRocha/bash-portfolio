@@ -1,19 +1,28 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 import type { HistoryLine, ThemeKey } from "@/terminal/types";
 import { runTerminalCommand } from "@/terminal/run-terminal-command";
 import { THEME_CONFIG, THEME_ORDER } from "@/terminal/theme";
 
-/** Encapsular toda a experiência interativa do portfólio em formato CLI. */
+// Encapsular toda a experiência interativa do portfólio em formato CLI.
 export default function Terminal() {
   // Inicializar o estado do tema com Ubuntu como padrão da aplicação.
   const [theme, setTheme] = useState<ThemeKey>("ubuntu");
   // Inicializar o histórico com uma mensagem de orientação para o primeiro acesso.
   const [history, setHistory] = useState<HistoryLine[]>([
-    { kind: "output", text: "Terminal Portfolio carregado. Digite 'help' para ver os comandos." },
+    {
+      kind: "output",
+      text: "Bash Portfolio carregado. Digite 'help' para ver os comandos.",
+    },
   ]);
   // Controlar o valor digitado no prompt atual.
   const [command, setCommand] = useState("");
+  // Armazenar apenas comandos enviados com Enter (texto após trim) para navegação estilo shell.
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  // Rastrear qual entrada do commandHistory está sendo exibida no input (-1 = linha nova / presente).
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  // Preservar a linha em edição antes de subir no histórico, para restaurar ao descer com seta.
+  const pendingDraftRef = useRef("");
   // Referenciar a área rolável para manter o foco na última saída.
   const scrollRef = useRef<HTMLDivElement>(null);
   // Referenciar o input para manter interação contínua sem cliques extras.
@@ -68,11 +77,50 @@ export default function Terminal() {
     setHistory((prev) => [...prev, ...nextLines]);
   };
 
+  // Navegar pelo histórico de comandos com setas, imitando Bash/Zsh.
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "ArrowUp") {
+      if (commandHistory.length === 0) return;
+      event.preventDefault();
+      if (historyIndex === -1) {
+        pendingDraftRef.current = command;
+        const nextIndex = commandHistory.length - 1;
+        setHistoryIndex(nextIndex);
+        setCommand(commandHistory[nextIndex]);
+        return;
+      }
+      const nextIndex = Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIndex);
+      setCommand(commandHistory[nextIndex]);
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      if (historyIndex === -1) return;
+      event.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        const nextIndex = historyIndex + 1;
+        setHistoryIndex(nextIndex);
+        setCommand(commandHistory[nextIndex]);
+        return;
+      }
+      setHistoryIndex(-1);
+      setCommand(pendingDraftRef.current);
+      pendingDraftRef.current = "";
+    }
+  };
+
   // Interceptar o submit do formulário para executar comandos sem recarregar a página.
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimmed = command.trim();
     runCommand(command);
     setCommand("");
+    setHistoryIndex(-1);
+    pendingDraftRef.current = "";
+    if (trimmed) {
+      setCommandHistory((previous) => [...previous, trimmed]);
+    }
   };
 
   return (
@@ -142,7 +190,15 @@ export default function Terminal() {
             <input
               ref={inputRef}
               value={command}
-              onChange={(event) => setCommand(event.target.value)}
+              onChange={(event) => {
+                const next = event.target.value;
+                setCommand(next);
+                if (historyIndex !== -1) {
+                  setHistoryIndex(-1);
+                  pendingDraftRef.current = next;
+                }
+              }}
+              onKeyDown={handleInputKeyDown}
               className="flex-1 bg-transparent outline-none border-none text-zinc-100 placeholder:text-zinc-400"
               autoComplete="off"
               spellCheck={false}

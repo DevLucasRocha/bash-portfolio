@@ -1,12 +1,12 @@
-# Bash Portfolio
+# Bash Portfolio - Lucas Rocha
 
-Portfólio interativo em formato de terminal, projetado para comunicar competências técnicas de forma prática e memorável.
+Portfólio interativo em formato de terminal (**Bash Portfolio**), projetado para comunicar competências técnicas de forma prática e memorável.
 
 ---
 
 ## A Proposta
 
-Este projeto simula a experiência de um terminal real para apresentar trajetória, stack e especialidades em uma interface não convencional e imersiva.
+O **Bash Portfolio** simula a experiência de um terminal real para apresentar trajetória, stack e especialidades em uma interface não convencional e imersiva.
 
 O objetivo é demonstrar, na prática, domínio em **Engenharia de Software**, **Cloud Computing** (**AWS**, **Azure**, **OCI**) e cultura **DevOps**, unindo experiência de produto, identidade técnica e execução front-end moderna.
 
@@ -19,10 +19,10 @@ O objetivo é demonstrar, na prática, domínio em **Engenharia de Software**, *
   - macOS
   - PowerShell
 - ⚙️ **Boot simulado** para reforçar a experiência de terminal desde a inicialização.
-- 📜 **Histórico de comandos** com foco em navegação orientada por CLI.
-- ⌨️ **Navegação por setas (↑/↓)** para recuperar comandos anteriores.
-- ✨ **Autocomplete com Tab** para acelerar interação e descoberta de comandos.
-- 🧠 **Comandos semânticos de currículo** (`perfil`, `experiencia`, `skills`, `certs`, `links`, `curriculo`, etc.).
+- 📜 **Histórico de saída** no painel, com comandos semânticos de currículo.
+- ⌨️ **Memória de comandos (estilo Bash/Zsh)** — após enviar com Enter, use **↑ / ↓** no input para recuperar linhas anteriores.
+- ✨ **Autocomplete com Tab** para acelerar interação e descoberta de comandos *(planejado / documentação)*.
+- 🧠 **Comandos semânticos** (`perfil`, `experiencia`, `skills`, `certs`, `links`, `curriculo`, etc.).
 
 ---
 
@@ -32,10 +32,10 @@ O objetivo é demonstrar, na prática, domínio em **Engenharia de Software**, *
 src/
 ├── components/
 │   └── terminal/
-│       └── Terminal.tsx      # Shell da UI + estado e interação do prompt
+│       └── Terminal.tsx      # Shell da UI, prompt e memória de comandos (↑/↓)
 ├── routes/
-│   ├── __root.tsx           # Shell HTML, CSS global e página 404
-│   └── index.tsx            # Rota `/` carregando o terminal
+│   ├── __root.tsx           # Shell HTML, meta (título da aba) e página 404
+│   └── index.tsx            # Rota `/` e meta da página inicial
 ├── terminal/
 │   ├── constants.ts         # Textos, URLs e comandos expostos no help
 │   ├── run-terminal-command.tsx # Regras de negócio da CLI (por comando)
@@ -48,6 +48,8 @@ src/
 public/
 └── Curriculo_Lucas_ATS.pdf   # Arquivo estático servido como `/Curriculo_Lucas_ATS.pdf`
 ```
+
+> **Título da aba do navegador:** este projeto usa **TanStack Start** (HTML gerenciado pelo router). O título canônico **Bash Portfolio - Lucas Rocha** está em `src/routes/__root.tsx` e em `src/routes/index.tsx` — não há `index.html` estático na raiz.
 
 > **Observação:** as dependências foram enxugadas no `package.json`. Após atualizar o repositório, rode `npm install` para atualizar também o `package-lock.json` na sua máquina.
 
@@ -68,8 +70,10 @@ public/
 
 ```bash
 git clone <url-do-repositorio>
-cd terminal-portfolio
+cd bash-portfolio
 ```
+
+*(Se a pasta local ainda se chamar `terminal-portfolio`, use esse nome no `cd`.)*
 
 ### 2) Instalar dependências
 
@@ -100,7 +104,7 @@ npm run preview
 
 ## Observações
 
-- O projeto prioriza legibilidade, manutenção e expansão incremental das interações de terminal.
+- O **Bash Portfolio** prioriza legibilidade, manutenção e expansão incremental das interações de terminal.
 - A arquitetura atual facilita adicionar novos comandos, temas e fluxos de UX sem acoplamento excessivo.
 
 ## 🌐 Contato

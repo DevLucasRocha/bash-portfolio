@@ -30,12 +30,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bash Portfolio" },
+      { title: "Bash Portfolio - Lucas Rocha" },
       {
         name: "description",
         content: "Portfólio interativo em estilo terminal: DevOps, Cloud e Engenharia de Software.",
       },
-      { property: "og:title", content: "Lucas Rocha — Terminal Portfolio" },
+      { property: "og:title", content: "Bash Portfolio - Lucas Rocha" },
       { property: "og:type", content: "website" },
     ],
     links: [
